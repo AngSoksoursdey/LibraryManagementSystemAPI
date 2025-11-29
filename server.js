@@ -5,6 +5,7 @@ const connectDB = require("./config/db");
 const userRoute = require("./routes/userRoutes");
 const roleRotes = require("./routes/roleRotes");
 const categoryRoutes = require("./routes/categoryRoutes");
+const authRoutes = require("./routes/authRoutes");
 
 const app = express();
 
@@ -15,7 +16,9 @@ app.use(express.json());
 app.get("/", (req, res) => {
   res.send("API is Running 🏃🏻‍♂️");
 });
+// Serve static files from the 'uploads' folder
 
+app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoute);
 
 app.use("/api/category", categoryRoutes);

@@ -16,49 +16,38 @@ exports.uploadPhoto = (req, res) => {
   });
 };
 // Helper to validate image extension
-function isValidImage(filename) {
-  if (!filename) return true; // allow default if not provided
-  const ext = path.extname(filename).toLowerCase();
-  return ext === ".png" || ext === ".jpg" || ext === ".jpeg";
-}
-//create
+
+//-----------------------------------------------------------------------------create-------------------------------------------------------------------------
 exports.createUser = async (req, res) => {
   try {
-    const {
-      fullname,
-      username,
-      gender,
-      password,
-      phoneNumber,
-      address,
-      roleID,
-      imageUrl,
-    } = req.body;
+    let imagePath = "/uploads/userImages/defaultUser.png"; // default
 
-    // Validate image extension
-    if (!isValidImage(imageUrl)) {
-      return res
-        .status(400)
-        .json({ message: "Only png, jpg, jpeg images are allowed" });
+    if (req.file) {
+      imagePath = "/uploads/userImages/" + req.file.filename;
     }
 
     const user = new User({
-      fullname,
-      username,
-      gender,
-      password,
-      phoneNumber,
-      address,
-      roleID,
-      imageUrl: imageUrl || "/uploads/userImages/defaultUser.png", // default image if not provided
+      fullname: req.body.fullname,
+      username: req.body.username,
+      gender: req.body.gender,
+      password: req.body.password,
+      phoneNumber: req.body.phoneNumber,
+      address: req.body.address,
+      roleID: req.body.roleID,
+      imageUrl: imagePath,
     });
 
     await user.save();
-    res.status(201).json({ message: "User created successfully", user });
+
+    res.status(201).json({
+      message: "User created successfully",
+      user,
+    });
   } catch (error) {
-    res
-      .status(400)
-      .json({ message: "Error creating user", error: error.message });
+    res.status(500).json({
+      message: "Error creating user",
+      error: error.message,
+    });
   }
 };
 
