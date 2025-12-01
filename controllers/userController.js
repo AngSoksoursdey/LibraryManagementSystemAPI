@@ -1,11 +1,26 @@
 const User = require("../models/User");
+const path = require("path");
+const fs = require("fs");
 
 exports.getAllUsers = async (req, res) => {
   try {
-    const users = await User.find();
-    res.json(users);
+    const users = await User.find().select("-password");
+    res.status(200).json(users);
   } catch (err) {
     res.status(500).json({ message: err.message });
+  }
+};
+
+exports.getUserByID = async (req, res) => {
+  try {
+    //const user = await User.findById(id).select("-password");
+    const user = await User.findById(req.params.id).select("-password");
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    res.status(200).json(user);
+  } catch (err) {
+    res.status(400).json({ message: err.message });
   }
 };
 
@@ -54,42 +69,42 @@ exports.createUser = async (req, res) => {
 //update
 exports.updateUser = async (req, res) => {
   try {
-    const user = await User.findById(req.params.id);
-    if (!user) return res.status(404).json({ message: "User not found" });
+    const id = req.params.id;
 
-    const {
-      fullname,
-      username,
-      gender,
-      password,
-      phoneNumber,
-      address,
-      roleID,
-    } = req.body;
-
-    // If a new image file is uploaded
-    let imageUrl = user.imageUrl; // keep old if not updated
-    if (req.file) {
-      imageUrl = "/uploads/userImages/" + req.file.filename;
+    //FAIND EXisting user
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
     }
 
-    // Update user fields
-    user.fullname = fullname || user.fullname;
-    user.username = username || user.username;
-    user.gender = gender || user.gender;
-    user.password = password || user.password;
-    user.phoneNumber = phoneNumber || user.phoneNumber;
-    user.address = address || user.address;
-    user.roleID = roleID || user.roleID;
+    let imageUrl = user.imageUrl; //keep existing image
+
+    if (req.file) {
+      //delete old image if not default
+      if (user.imageUrl !== "/uploads/userImages/defaultUser.png") {
+        const oldImagePath = path.join(__dirname, "..", user.imageUrl);
+        if (fs.existsSync(oldImagePath)) fs.unlinkSync(oldImagePath);
+      }
+
+      // Set new file path
+      imageUrl = `/uploads/userImages/${req.file.filename}`;
+    }
+
+    //update fields
+    user.fullname = req.body.fullname || user.fullname;
+    user.username = req.body.username || user.username;
+    user.gender = req.body.gender || user.gender;
+    user.password = req.body.password || user.password;
+    user.phoneNumber = req.body.phoneNumber || user.phoneNumber;
+    user.address = req.body.address || user.address;
+    user.roleID = req.body.roleID || user.roleID;
     user.imageUrl = imageUrl;
 
     await user.save();
+
     res.status(200).json({ message: "User updated successfully", user });
-  } catch (error) {
-    res.status(400).json({
-      message: "Error updating user",
-      error: error.message,
-    });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
 };
 

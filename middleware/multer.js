@@ -1,6 +1,19 @@
 const multer = require("multer");
 const path = require("path");
 
+const allowtypes = ["image/jpeg", "image/jpg", "image/png"];
+
+function fileFilter(req, file, cb) {
+  if (allowtypes.includes(file.mimetype)) {
+    cb(null, true);
+  } else {
+    cb(
+      new Error("Invalid file type. Only JPEG, JPG, and PNG are allowed."),
+      false
+    );
+  }
+}
+
 // Dynamic storage generator
 function createStorage(folderName) {
   return multer.diskStorage({
@@ -15,7 +28,10 @@ function createStorage(folderName) {
 }
 
 // Separate uploaders for each folder
-const userUpload = multer({ storage: createStorage("userImages") });
+const userUpload = multer({
+  storage: createStorage("userImages"),
+  fileFilter: fileFilter,
+});
 const memberUpload = multer({ storage: createStorage("memberImages") });
 const productUpload = multer({ storage: createStorage("productImages") });
 

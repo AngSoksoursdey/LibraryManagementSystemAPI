@@ -13,14 +13,37 @@ router.post(
 
 const {
   getAllUsers,
+  getUserByID,
   createUser,
   updateUser,
   deleteUser,
 } = require("../controllers/userController");
 
 router.get("/", getAllUsers);
-router.post("/create", userUpload.single("photo"), userController.createUser);
-router.put("/:id", updateUser);
+//router.post("/create", userUpload.single("photo"), userController.createUser);
+router.post("/create", (req, res) => {
+  userUpload.single("photo")(req, res, function (err) {
+    if (err instanceof Error) {
+      return res.status(400).json({ message: err.message });
+    }
+    userController.createUser(req, res);
+  });
+});
+
+router.get("/:id", getUserByID);
+
+//router.put("/:id", updateUser);
+// UPDATE USER (with optional new photo)
+router.put("/:id", (req, res) => {
+  userUpload.single("photo")(req, res, function (err) {
+    // Multer file error
+    if (err instanceof Error) {
+      return res.status(400).json({ message: err.message });
+    }
+
+    userController.updateUser(req, res);
+  });
+});
 router.delete("/:id", deleteUser);
 
 module.exports = router;
