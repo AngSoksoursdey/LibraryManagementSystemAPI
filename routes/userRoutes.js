@@ -15,8 +15,8 @@ const {
   getAllUsers,
   getUserByID,
   createUser,
-  updateUser,
-  deleteUser,
+  updateUserByID,
+  deleteUserByID,
 } = require("../controllers/userController");
 
 router.get("/", getAllUsers);
@@ -41,9 +41,9 @@ router.put("/:id", (req, res) => {
       return res.status(400).json({ message: err.message });
     }
 
-    userController.updateUser(req, res);
+    updateUserByID(req, res);
   });
 });
-router.delete("/:id", deleteUser);
+router.delete("/:id", deleteUserByID);
 
 module.exports = router;

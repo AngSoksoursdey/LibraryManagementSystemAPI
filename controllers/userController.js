@@ -67,7 +67,7 @@ exports.createUser = async (req, res) => {
 };
 
 //update
-exports.updateUser = async (req, res) => {
+exports.updateUserByID = async (req, res) => {
   try {
     const id = req.params.id;
 
@@ -109,7 +109,7 @@ exports.updateUser = async (req, res) => {
 };
 
 //delete
-exports.deleteUser = async (req, res) => {
+exports.deleteUserByID = async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
 
