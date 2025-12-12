@@ -9,8 +9,13 @@ const stockSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "Product",
   },
+  categoryID: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Category",
+  },
   qty: { type: Number, required: true },
   importDate: { type: Date, default: Date.now },
+  imageUrl: { type: String, default: "/uploads/stockImages/defaultStock.png" },
 });
 
 module.exports = mongoose.model("Stock", stockSchema);

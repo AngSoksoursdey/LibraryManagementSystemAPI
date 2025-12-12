@@ -32,11 +32,15 @@ const userUpload = multer({
   storage: createStorage("userImages"),
   fileFilter: fileFilter,
 });
+
+//
 const memberUpload = multer({ storage: createStorage("memberImages") });
 const productUpload = multer({ storage: createStorage("productImages") });
+const stockUpload = multer({ storage: createStorage("stockImages") });
 
 module.exports = {
   userUpload,
   memberUpload,
   productUpload,
+  stockUpload,
 };

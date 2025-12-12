@@ -9,7 +9,10 @@ const productSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "Category",
   },
-  imageUrl: { type: String, default: "/uploads/userImages/defaultUser.png" },
+  imageUrl: {
+    type: String,
+    default: "/uploads/productImages/defaultProduct.png",
+  },
 });
 
 module.exports = mongoose.model("Product", productSchema);
