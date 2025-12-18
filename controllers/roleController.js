@@ -9,6 +9,18 @@ exports.getAllRoles = async (req, res) => {
   }
 };
 
+exports.getRoleByID = async (req, res) => {
+  try {
+    const role = await Role.findById(req.params.id);
+    if (!role) {
+      return res.status(404).json({ message: "Role not found" });
+    }
+    res.json(role);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
 // exports.createRole = async (req, res) => {
 //   try {
 //     const role = new Role(req.body);
