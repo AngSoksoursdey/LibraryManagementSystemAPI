@@ -7,6 +7,9 @@ const roleRotes = require("./routes/roleRotes");
 const categoryRoutes = require("./routes/categoryRoutes");
 const authRoutes = require("./routes/authRoutes");
 const stockRoutes = require("./routes/stockRoutes");
+const memberRoutes = require("./routes/memberRoutes");
+const reportRoutes = require("./routes/reportRoutes");
+
 const cors = require("cors");
 
 const app = express();
@@ -32,6 +35,8 @@ app.use("/api/user", userRoute);
 app.use("/api/stocks", stockRoutes);
 app.use("/api/category", categoryRoutes);
 app.use("/api/products", productRoutes);
+app.use("/api/members", memberRoutes);
+app.use("/api/reports", reportRoutes);
 
 app.use("/api/role", roleRotes);
 

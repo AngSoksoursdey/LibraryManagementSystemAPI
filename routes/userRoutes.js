@@ -7,7 +7,7 @@ const userController = require("../controllers/userController");
 
 router.post(
   "/upload-photo",
-  userUpload.single("photo"),
+  userUpload.single("imageUrl"),
   userController.uploadPhoto
 );
 
@@ -22,7 +22,7 @@ const {
 router.get("/", getAllUsers);
 //router.post("/create", userUpload.single("photo"), userController.createUser);
 router.post("/create", (req, res) => {
-  userUpload.single("photo")(req, res, function (err) {
+  userUpload.single("imageUrl")(req, res, function (err) {
     if (err instanceof Error) {
       return res.status(400).json({ message: err.message });
     }
@@ -35,7 +35,7 @@ router.get("/:id", getUserByID);
 //router.put("/:id", updateUser);
 // UPDATE USER (with optional new photo)
 router.put("/:id", (req, res) => {
-  userUpload.single("photo")(req, res, function (err) {
+  userUpload.single("imageUrl")(req, res, function (err) {
     // Multer file error
     if (err instanceof Error) {
       return res.status(400).json({ message: err.message });

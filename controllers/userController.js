@@ -16,7 +16,9 @@ exports.getAllUsers = async (req, res) => {
 exports.getUserByID = async (req, res) => {
   try {
     //const user = await User.findById(id).select("-password");
-    const user = await User.findById(req.params.id).select("-password");
+    const user = await User.findById(req.params.id)
+      .select("-password")
+      .populate("roleID", "name");
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
@@ -118,7 +120,7 @@ exports.deleteUserByID = async (req, res) => {
     if (!user) return res.status(404).json({ message: "User not found" });
 
     await User.findByIdAndDelete(req.params.id);
-    res.status(200).json({ message: "User deleted successfully" });
+    res.status(200).json({ message: "User deleted successfully", user });
   } catch (error) {
     res
       .status(400)
