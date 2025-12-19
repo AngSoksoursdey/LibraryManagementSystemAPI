@@ -27,6 +27,10 @@ exports.getAllReports = async (req, res) => {
       .populate("memberID", "fullName")
       .populate("productID", "productName")
       .populate("userID", "fullname");
+
+    if (!report) {
+      res.status(404).json({ message: "No report found" });
+    }
     res.status(200).json({ message: "Get Report successfully", report });
   } catch (err) {
     res.status(500).json({ message: err.message });

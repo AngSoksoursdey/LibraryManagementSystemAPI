@@ -42,7 +42,8 @@ exports.getAllProducts = async (req, res) => {
       "categoryID",
       "categoryName"
     );
-    res.status(200).json(products);
+    //res.status(200).json(products);
+    res.status(200).json({ message: "Get Products successfully", products });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -58,7 +59,8 @@ exports.getProductByID = async (req, res) => {
     if (!product) {
       return res.status(404).json({ message: "Product not found" });
     }
-    res.status(200).json(product);
+    //res.status(200).json(product);
+    res.status(200).json({ message: "Get Product successfully", product });
   } catch (err) {
     res.status(400).json({ message: err.message });
   }

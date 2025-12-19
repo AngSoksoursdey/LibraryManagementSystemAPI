@@ -31,9 +31,9 @@ app.get("/", (req, res) => {
 // Serve static files from the 'uploads' folder
 
 app.use("/api/auth", authRoutes);
-app.use("/api/user", userRoute);
+app.use("/api/users", userRoute);
 app.use("/api/stocks", stockRoutes);
-app.use("/api/category", categoryRoutes);
+app.use("/api/categories", categoryRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/members", memberRoutes);
 app.use("/api/reports", reportRoutes);

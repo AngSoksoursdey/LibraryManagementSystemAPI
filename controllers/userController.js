@@ -7,7 +7,7 @@ exports.getAllUsers = async (req, res) => {
     const users = await User.find()
       .select("-password")
       .populate("roleID", "name");
-    res.status(200).json(users);
+    res.status(200).json({ message: "Get Users successfully", users });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -22,7 +22,7 @@ exports.getUserByID = async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-    res.status(200).json(user);
+    res.status(200).json({ message: "Get User successfully", user });
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
