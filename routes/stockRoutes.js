@@ -9,8 +9,24 @@ router.post(
   stockController.uploadPhoto
 );
 
-const { createrStocks } = require("../controllers/stockController");
+const {
+  createrStocks,
+  getAllStocks,
+  getStockByID,
+  updateStock,
+  deleteStock,
+} = require("../controllers/stockController");
 
-router.get("/", stockController.createrStocks);
+//router.get("/", stockController.createrStocks);\
+router.post(
+  "/create",
+  stockUpload.single("photo"),
+  stockController.createrStocks
+);
+
+router.get("/", getAllStocks);
+router.get("/:id", getStockByID);
+router.put("/update/:id", stockUpload.single("photo"), updateStock);
+router.delete("/delete/:id", deleteStock);
 
 module.exports = router;

@@ -5,10 +5,9 @@ const stockSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
   },
-  productID: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Product",
-  },
+  productName: { type: String, required: true },
+  totalBorrow: { type: Number, default: 0 },
+  status: { type: Boolean, required: true },
   categoryID: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Category",

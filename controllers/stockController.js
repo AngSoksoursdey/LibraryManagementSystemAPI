@@ -12,36 +12,48 @@ exports.uploadPhoto = (req, res) => {
 };
 
 //create stocks
+
 exports.createrStocks = async (req, res) => {
   try {
     let imagePath = "/uploads/stockImages/defaultStock.png"; // default
     if (req.file) {
-      imagePath = "/uploads/stockImages" + req.file.filename;
+      imagePath = "/uploads/stockImages/" + req.file.filename;
     }
-
+    let qtyValue = req.body.qty;
+    const totalBorrowValue = req.body.totalBorrow;
+    if (totalBorrowValue > 0) {
+      qtyValue = qtyValue - totalBorrowValue;
+      if (qtyValue < 0) qtyValue = 0; // Ensure qty doesn't go negative
+    }
     const stock = new Stock({
       userID: req.body.userID,
-      productID: req.body.productID,
+      productName: req.body.productName,
+      totalBorrow: totalBorrowValue,
+      status: req.body.status,
       categoryID: req.body.categoryID,
-      qty: req.body.qty,
-      importDat: req.body.importDat,
+      qty: qtyValue,
+      importDate: req.body.importDate,
       imageUrl: imagePath,
     });
     await stock.save();
-    res.statue(201).json({
+    res.status(201).json({
       message: "Stock create successfully",
       stock,
     });
   } catch (err) {
-    res.statue.json({ message: "Error creating stocks", error: error.message });
+    res.status(500).json({ message: err.message });
   }
 };
-
 //get all stock
 exports.getAllStocks = async (req, res) => {
   try {
-    const stock = await Stock.find();
-    res.status(200).json(stock);
+    const stock = await Stock.find()
+      .populate("categoryID", "categoryName")
+      .populate("userID", "username");
+    if (!stock) {
+      res.status(404).json({ message: "No stocks found" });
+    }
+    res.status(200).json({ message: "Stocks retrieved successfully", stock });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -49,11 +61,13 @@ exports.getAllStocks = async (req, res) => {
 //get stock by ID
 exports.getStockByID = async (req, res) => {
   try {
-    const stock = await Stock.findById(req, param.id);
+    const stock = await Stock.findById(req.params.id)
+      .populate("categoryID", "categoryName")
+      .populate("userID", "username");
     if (!stock) {
-      return res.status(404).json({ message: err.message });
+      return res.status(404).json({ message: "Stock not found" });
     }
-    res.status(200).json(stock);
+    res.status(200).json({ message: "Stock retrieved successfully", stock });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -62,34 +76,53 @@ exports.getStockByID = async (req, res) => {
 //update stock
 exports.updateStock = async (req, res) => {
   try {
-    const id = req.param.id;
-
+    const id = req.params.id;
     const stock = await Stock.findById(id);
     if (!stock) {
       return res.status(404).json({ message: "Stock not found" });
     }
-
     let imageUrl = stock.imageUrl;
-
     if (req.file) {
       if (stock.imageUrl !== "/uploads/stockImages/defaultStock.png") {
         const oldImagePath = path.join(__dirname, "..", stock.imageUrl);
         if (fs.existsSync(oldImagePath)) fs.unlinkSync(oldImagePath);
       }
-
       imageUrl = `/uploads/stockImages/${req.file.filename}`;
+    }
+    let qtyValue = req.body.qty || stock.qty;
+    const totalBorrowValue = req.body.totalBorrow || stock.totalBorrow;
+    if (totalBorrowValue > 0) {
+      qtyValue = qtyValue - totalBorrowValue;
+      if (qtyValue < 0) qtyValue = 0; // Ensure qty doesn't go negative
     }
 
     stock.userID = req.body.userID || stock.userID;
-    stock.productID = req.body.productID || stock.productID;
+    stock.productName = req.body.productName || stock.productName;
+    stock.totalBorrow = totalBorrowValue;
+    stock.status = req.body.status || stock.status;
     stock.categoryID = req.body.categoryID || stock.categoryID;
-    stock.qty = req.body.qty || stock.qty;
+    stock.qty = qtyValue;
     stock.importDate = req.body.importDate || stock.importDate;
-    stock.imageUrl = req.body.imageUrl || stock.imageUrl;
-
+    stock.imageUrl = imageUrl;
     await stock.save();
-
-    res.status(200).json({ message: "Stock upate successfully" });
+    res.status(200).json({ message: "Stock updated successfully", stock });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+//delete stock
+exports.deleteStock = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const stock = await Stock.findByIdAndDelete(id);
+    if (!stock) {
+      return res.status(404).json({ message: "Stock not found" });
+    }
+    if (stock.imageUrl !== "/uploads/stockImages/defaultStock.png") {
+      const imagePath = path.join(__dirname, "..", stock.imageUrl);
+      if (fs.existsSync(imagePath)) fs.unlinkSync(imagePath);
+    }
+    res.status(200).json({ message: "Stock deleted successfully", stock });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
