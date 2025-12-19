@@ -3,11 +3,15 @@ const router = express.Router();
 const { userUpload } = require("../middleware/multer");
 const userController = require("../controllers/userController");
 
-// Upload photo separate endpoint (your example)
+// router.post(
+//   "/upload-photo",
+//   userUpload.single("imageUrl"),
+//   userController.uploadPhoto
+// );
 
 router.post(
   "/upload-photo",
-  userUpload.single("imageUrl"),
+  userUpload.single("avatar"),
   userController.uploadPhoto
 );
 
@@ -33,7 +37,6 @@ router.post("/create", (req, res) => {
 router.get("/:id", getUserByID);
 
 //router.put("/:id", updateUser);
-// UPDATE USER (with optional new photo)
 router.put("/:id", (req, res) => {
   userUpload.single("imageUrl")(req, res, function (err) {
     // Multer file error

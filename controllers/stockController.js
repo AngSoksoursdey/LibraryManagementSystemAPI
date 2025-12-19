@@ -5,9 +5,14 @@ const { error } = require("console");
 const { param } = require("../routes/stockRoutes");
 
 exports.uploadPhoto = (req, res) => {
-  res.json({
-    message: "Product  image Upload",
-    file: req.file,
+  if (!req.file) {
+    return res.status(400).json({ message: "No file uploaded" });
+  }
+
+  const imageUrl = `/uploads/stockImages/${req.file.filename}`;
+
+  res.status(200).json({
+    url: imageUrl, // ✅ Angular expects this
   });
 };
 

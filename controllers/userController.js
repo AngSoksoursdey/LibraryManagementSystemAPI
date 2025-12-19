@@ -28,12 +28,24 @@ exports.getUserByID = async (req, res) => {
   }
 };
 
+// exports.uploadPhoto = (req, res) => {
+//   res.json({
+//     message: "User image Upload",
+//     file: req.file,
+//   });
+// };
 exports.uploadPhoto = (req, res) => {
-  res.json({
-    message: "User image Upload",
-    file: req.file,
+  if (!req.file) {
+    return res.status(400).json({ message: "No file uploaded" });
+  }
+
+  const imageUrl = `/uploads/userImages/${req.file.filename}`;
+
+  res.status(200).json({
+    url: imageUrl, // ✅ Angular expects this
   });
 };
+
 // Helper to validate image extension
 
 //-----------------------------------------------------------------------------create-------------------------------------------------------------------------
