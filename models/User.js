@@ -12,6 +12,7 @@ const userSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "Role",
   },
+  roleName: { type: String, required: true },
   imageUrl: { type: String, default: "/uploads/userImages/defaultUser.png" },
 });
 

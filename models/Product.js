@@ -9,6 +9,7 @@ const productSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "Category",
   },
+  categoryName: { type: String, required: true },
   imageUrl: {
     type: String,
     default: "/uploads/productImages/defaultProduct.png",

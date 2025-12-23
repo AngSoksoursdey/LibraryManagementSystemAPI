@@ -1,4 +1,5 @@
 const User = require("../models/User");
+const Role = require("../models/Role");
 const path = require("path");
 const fs = require("fs");
 
@@ -57,6 +58,14 @@ exports.createUser = async (req, res) => {
       imagePath = "/uploads/userImages/" + req.file.filename;
     }
 
+    const { roleName } = req.body;
+
+    // find role by name
+    const role = await Role.findOne({ name: roleName });
+    if (!role) {
+      return res.status(400).json({ message: "Role not found" });
+    }
+
     const user = new User({
       fullname: req.body.fullname,
       username: req.body.username,
@@ -64,7 +73,11 @@ exports.createUser = async (req, res) => {
       password: req.body.password,
       phoneNumber: req.body.phoneNumber,
       address: req.body.address,
-      roleID: req.body.roleID,
+      roleID: role._id,
+      roleName: role.name,
+
+      //roleName: role.name, // store the name
+
       imageUrl: imagePath,
     });
 
@@ -76,12 +89,10 @@ exports.createUser = async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({
-      message: "Error creating user",
-      error: error.message,
+      message: error.message,
     });
   }
 };
-
 //update
 exports.updateUserByID = async (req, res) => {
   try {
@@ -106,6 +117,15 @@ exports.updateUserByID = async (req, res) => {
       imageUrl = `/uploads/userImages/${req.file.filename}`;
     }
 
+    if (req.body.roleName) {
+      const role = await Role.findOne({ name: req.body.roleName });
+      if (!role) {
+        return res.status(400).json({ message: "Role not found" });
+      }
+      user.roleID = role._id;
+      user.roleName = role.name;
+    }
+
     //update fields
     user.fullname = req.body.fullname || user.fullname;
     user.username = req.body.username || user.username;
@@ -113,7 +133,7 @@ exports.updateUserByID = async (req, res) => {
     user.password = req.body.password || user.password;
     user.phoneNumber = req.body.phoneNumber || user.phoneNumber;
     user.address = req.body.address || user.address;
-    user.roleID = req.body.roleID || user.roleID;
+    //user.roleID = req.body.roleID || user.roleID;
     user.imageUrl = imageUrl;
 
     await user.save();

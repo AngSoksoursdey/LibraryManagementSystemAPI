@@ -1,16 +1,34 @@
 const Report = require("../models/Report");
-
+const User = require("../models/User");
+const Member = require("../models/Member");
+const Stock = require("../models/Stock");
 //create report
 exports.createReport = async (req, res) => {
   try {
+    const { user } = req.body;
+    const { member } = req.body;
+
+    //find User by name
+    const users = await User.findOne({ name: user });
+    if (!users) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    //find Member by name
+    const members = await Member.findOne({ name: member });
+    if (!members) {
+      return res.status(404).json({ message: "Member not found" });
+    }
+    //find Product by name
+
     const report = new Report({
-      memberID: req.body.memberID,
+      member: Member.name,
       productID: req.body.productID,
       borrowDate: req.body.borrowDate,
       dueDate: req.body.dueDate,
       returnDate: req.body.returnDate,
       status: req.body.status,
-      userID: req.body.userID,
+      user: User.name,
     });
 
     await report.save();
@@ -63,13 +81,33 @@ exports.updateReport = async (req, res) => {
       return res.status(404).json({ message: "Report not found" });
     }
 
-    report.memberID = req.body.memberID || report.memberID;
+    //update user by name
+    if (req.body.user) {
+      const users = await User.findOne({ name: req.body.user });
+      if (!users) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      report.user_name = req.body.user_name;
+    }
+
+    //update member by name
+    if (req.body.member) {
+      const members = await Member.findOne({ name: req.body.member });
+      if (!members) {
+        return res.status(404).json({ message: "Member not found" });
+      }
+      report.member = req.body.member;
+    }
+
+    //update product by name
+
+    // report.memberID = req.body.memberID || report.memberID;
     report.productID = req.body.productID || report.productID;
     report.borrowDate = req.body.borrowDate || report.borrowDate;
     report.dueDate = req.body.dueDate || report.dueDate;
     report.returnDate = req.body.returnDate || report.returnDate;
     report.status = req.body.status || report.status;
-    report.userID = req.body.userID || report.userID;
+    //report.userID = req.body.userID || report.userID;
 
     await report.save();
 

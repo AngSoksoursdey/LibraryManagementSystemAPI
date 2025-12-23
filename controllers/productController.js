@@ -1,4 +1,5 @@
 const product = require("../models/Product");
+const categories = require("../models/Category");
 const path = require("path");
 const fs = require("fs");
 const Product = require("../models/Product");
@@ -23,12 +24,21 @@ exports.createProducts = async (req, res) => {
       imagePath = "/uploads/productImages/" + req.file.filename;
     }
 
+    const { categoryName } = req.body;
+
+    // find category by name
+    const category = await categories.findOne({ categoryName });
+    if (!category) {
+      return res.status(400).json({ message: "Category  not found" });
+    }
+
     const product = new Product({
       productName: req.body.productName,
       qty: req.body.qty,
       totalBorrow: req.body.totalBorrow,
       status: req.body.status,
-      categoryID: req.body.categoryID,
+      categoryID: category._id,
+      categoryName: category.categoryName,
       imageUrl: imagePath,
     });
 
@@ -133,6 +143,18 @@ exports.updateProducts = async (req, res) => {
       // Set new file path
       imageUrl = `/uploads/productImages/${req.file.filename}`;
     }
+
+    if (req.body.categoryName) {
+      const category = await categories.findOne({
+        categoryName: req.body.categoryName,
+      });
+      if (!category) {
+        return res.status(400).json({ message: "Category not found" });
+      }
+      product.categoryID = category._id;
+      product.categoryName = category.categoryName;
+    }
+
     // Update fields
     product.productName = req.body.productName || product.productName;
     product.qty = req.body.qty || product.qty;
